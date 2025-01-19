@@ -70,9 +70,14 @@ func postTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tasks[task.ID] = task
+	_, ok := tasks[task.ID]
+	if !ok {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	}
+	http.Error(w, "Такая задача уже существует", http.StatusBadRequest)
+	return
 }
 
 // getTask возвращает задачу с указанным в запросе пути ID, если такая есть в мапе
